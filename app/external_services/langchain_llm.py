@@ -1,31 +1,20 @@
+from pydantic import SecretStr
+
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.prompts import ChatPromptTemplate
-from langchain_core.prompts import (
-    SystemMessagePromptTemplate,
-    HumanMessagePromptTemplate,
-)
 from langchain_core.utils.function_calling import convert_to_openai_function
-from .structure_model import Conversation
+
+from app.external_services import structured_output
 
 
-def base_chain(api_key: str):
-    system_prompt = """content의 내용을 소재로 user_1과 user_2의 대화 생성"""
-    user_prompt = "content:{content}\nuser_1:{user_1}\nuser_2:{user_2}\n"
-    prompt_template = ChatPromptTemplate(
-        [
-            SystemMessagePromptTemplate.from_template(system_prompt),
-            HumanMessagePromptTemplate.from_template(user_prompt),
-        ]
-    )
-    model_name = "gemini-1.5-flash-002"
 
+def base_chain(model: str, api_key: SecretStr, custom_prompt: list[tuple[str, str]], llm_params: dict):
+    prompt = ChatPromptTemplate.from_messages(custom_prompt)
     llm = ChatGoogleGenerativeAI(
-        model=model_name,
+        model=model,
         api_key=api_key,
-        temperature=0,
-        max_tokens=2000,
-        streaming=True,
+        **llm_params,
         async_client_running=True,
-    ).with_structured_output(convert_to_openai_function(Conversation))
-    chain = prompt_template | llm
+    ).with_structured_output(convert_to_openai_function(structured_output.Conversation))
+    chain = prompt | llm
     return chain
