@@ -1,0 +1,12 @@
+{
+    "recommendations": [
+        // 핵심 필수 확장
+        "ms-python.python", // Python 기본 확장
+        "ms-python.vscode-pylance", // Python 언어 서버
+        "ms-python.black-formatter", // Black 포매터
+        "ms-python.isort", // Import 정렬
+        "ms-python.pylint", // Pylint 린터
+        "ms-python.debugpy", // Python 디버거
+        "njpwerner.autodocstring" // 독스트링 자동 생성
+    ]
+}
